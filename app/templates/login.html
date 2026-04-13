@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Controle Financeiro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      padding: 48px 40px 40px;
+      width: 100%;
+      max-width: 380px;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo .icon {
+      font-size: 2.8rem;
+      margin-bottom: 8px;
+    }
+    .logo h1 {
+      font-size: 1.25rem;
+      color: #1a5276;
+      font-weight: 700;
+    }
+    .logo p {
+      font-size: 0.82rem;
+      color: #888;
+      margin-top: 4px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #333;
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: 18px;
+    }
+    input:focus { border-color: #2980b9; }
+    button {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #1a5276, #2980b9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: opacity .2s;
+    }
+    button:hover { opacity: .9; }
+    .erro {
+      background: #fadbd8;
+      color: #c0392b;
+      border: 1px solid #f1948a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .hint {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <h1>Controle Financeiro</h1>
+      <p>Registro de Despesas e Receitas</p>
+    </div>
+
+    {% if erro %}
+      <div class="erro">{{ erro }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <label for="login">Login</label>
+      <input type="text" id="login" name="login" placeholder="Digite seu login" autofocus required>
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+      <button type="submit">Entrar</button>
+    </form>
+
+
+  </div>
+</body>
+</html>

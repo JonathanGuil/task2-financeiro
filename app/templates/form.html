@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ acao }} Lançamento — Controle Financeiro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
+
+    header {
+      background: linear-gradient(135deg, #1a5276, #2980b9);
+      color: white; padding: 18px 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    header h1 { font-size: 1.3rem; font-weight: 600; }
+    header p  { font-size: 0.82rem; opacity: 0.75; margin-top: 2px; }
+
+    .container { max-width: 560px; margin: 36px auto; padding: 0 20px; }
+
+    .card {
+      background: white; border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 32px 36px;
+    }
+    .card h2 { font-size: 1.1rem; color: #1a5276; margin-bottom: 24px;
+               padding-bottom: 12px; border-bottom: 2px solid #d6eaf8; }
+
+    .campo { margin-bottom: 18px; }
+    label { display: block; font-size: 0.78rem; text-transform: uppercase;
+            letter-spacing: .4px; color: #666; font-weight: 600; margin-bottom: 6px; }
+    input, select {
+      width: 100%; padding: 10px 13px; border: 1.5px solid #ddd;
+      border-radius: 7px; font-size: 0.95rem; color: #333; outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, select:focus { border-color: #2980b9; }
+
+    .linha-dupla { display: flex; gap: 14px; }
+    .linha-dupla .campo { flex: 1; }
+
+    .acoes { display: flex; gap: 10px; margin-top: 24px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 7px; cursor: pointer;
+           font-size: 0.9rem; font-weight: 600; text-decoration: none;
+           display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: #2980b9; color: white; flex: 1; justify-content: center; }
+    .btn-primary:hover { background: #2471a3; }
+    .btn-outline  { background: white; color: #666; border: 1.5px solid #ddd; }
+    .btn-outline:hover { background: #f7f7f7; }
+
+    .erro { background: #fadbd8; color: #c0392b; border-radius: 8px;
+            padding: 11px 15px; margin-bottom: 18px; font-size: 0.88rem; }
+
+    footer { text-align: center; padding: 20px; color: #bbb; font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Controle de Despesas e Receitas</h1>
+  <p>Registro de lançamentos financeiros</p>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>{{ acao }} Lançamento</h2>
+
+    {% if erro %}
+      <div class="erro">{{ erro }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="campo">
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao" placeholder="Ex: Salário mensal"
+               value="{{ lancamento.descricao if lancamento else '' }}" required>
+      </div>
+
+      <div class="linha-dupla">
+        <div class="campo">
+          <label for="data_lancamento">Data</label>
+          <input type="date" id="data_lancamento" name="data_lancamento"
+                 value="{{ lancamento.data_lancamento if lancamento else '' }}" required>
+        </div>
+        <div class="campo">
+          <label for="valor">Valor (R$)</label>
+          <input type="number" id="valor" name="valor" step="0.01" min="0.01"
+                 placeholder="0,00"
+                 value="{{ lancamento.valor if lancamento else '' }}" required>
+        </div>
+      </div>
+
+      <div class="linha-dupla">
+        <div class="campo">
+          <label for="tipo_lancamento">Tipo</label>
+          <select id="tipo_lancamento" name="tipo_lancamento" required>
+            <option value="">Selecione</option>
+            <option value="receita" {% if lancamento and lancamento.tipo_lancamento == 'receita' %}selected{% endif %}>Receita</option>
+            <option value="despesa" {% if lancamento and lancamento.tipo_lancamento == 'despesa' %}selected{% endif %}>Despesa</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="situacao">Situação</label>
+          <select id="situacao" name="situacao">
+            <option value="pendente"  {% if not lancamento or lancamento.situacao == 'pendente'  %}selected{% endif %}>Pendente</option>
+            <option value="efetivado" {% if lancamento and lancamento.situacao == 'efetivado' %}selected{% endif %}>Efetivado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <a href="/" class="btn btn-outline">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer>Controle de Despesas e Receitas</footer>
+
+</body>
+</html>

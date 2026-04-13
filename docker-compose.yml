@@ -1,0 +1,55 @@
+# =============================================================
+#  Task 2 — Controle de Despesas e Receitas
+# =============================================================
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-fin
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       task2
+      POSTGRES_USER:     finuser
+      POSTGRES_PASSWORD: finpass
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - finnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finuser -d task2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  flask-fin:
+    image: python:3.12-slim
+    container_name: flask-fin
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST:       postgres
+      DB_PORT:       "5432"
+      DB_NAME:       task2
+      DB_USER:       finuser
+      DB_PASS:       finpass
+      MAIL_USER:     jonathanguilhermequinot@gmail.com
+      MAIL_PASSWORD: "nyjt acpo zrom uoyb"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    ports:
+      - "5002:5000"
+    networks:
+      - finnet
+    command: >
+      bash -c "
+        pip install -r requirements.txt --quiet &&
+        python app.py
+      "
+
+networks:
+  finnet:
+    driver: bridge

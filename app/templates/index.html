@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lançamentos — Controle Financeiro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
+
+    header {
+      background: linear-gradient(135deg, #1a5276, #2980b9);
+      color: white; padding: 18px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    header .titulo h1 { font-size: 1.3rem; font-weight: 600; }
+    header .titulo p  { font-size: 0.82rem; opacity: 0.75; margin-top: 2px; }
+    header .user-info { display: flex; align-items: center; gap: 12px; font-size: 0.88rem; }
+    header .user-info span { opacity: .85; }
+    header .user-info a {
+      color: white; background: rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 6px; text-decoration: none;
+      font-size: 0.82rem; font-weight: 600;
+    }
+    header .user-info a:hover { background: rgba(255,255,255,0.3); }
+
+    .container { max-width: 1100px; margin: 28px auto; padding: 0 20px; }
+
+    /* cards */
+    .cards { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+    .card { flex: 1; min-width: 150px; background: white; border-radius: 10px;
+            padding: 18px 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .card .label { font-size: 0.75rem; text-transform: uppercase;
+                   letter-spacing: .5px; color: #999; margin-bottom: 6px; }
+    .card .value { font-size: 1.4rem; font-weight: 700; }
+    .card.receita .value { color: #27ae60; }
+    .card.despesa .value { color: #e74c3c; }
+    .card.saldo   .value { color: #2980b9; }
+    .card.total   .value { color: #555; }
+
+    /* filtros */
+    .filtros-wrap {
+      background: white; border-radius: 10px; padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px;
+    }
+    .filtros-wrap form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .filtro-grupo { display: flex; flex-direction: column; gap: 4px; }
+    .filtro-grupo label { font-size: 0.75rem; text-transform: uppercase;
+                          letter-spacing: .4px; color: #888; font-weight: 600; }
+    .filtro-grupo input, .filtro-grupo select {
+      padding: 7px 10px; border: 1.5px solid #ddd; border-radius: 6px;
+      font-size: 0.88rem; outline: none; color: #333;
+    }
+    .filtro-grupo input:focus, .filtro-grupo select:focus { border-color: #2980b9; }
+    .filtro-acoes { display: flex; gap: 8px; }
+    .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;
+           font-size: 0.85rem; font-weight: 600; text-decoration: none;
+           display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary  { background: #2980b9; color: white; }
+    .btn-primary:hover { background: #2471a3; }
+    .btn-success  { background: #27ae60; color: white; }
+    .btn-success:hover { background: #229954; }
+    .btn-outline  { background: white; color: #666; border: 1.5px solid #ddd; }
+    .btn-outline:hover { background: #f7f7f7; }
+    .btn-danger   { background: #e74c3c; color: white; }
+    .btn-danger:hover { background: #cb4335; }
+    .btn-warning  { background: #f39c12; color: white; }
+    .btn-warning:hover { background: #d68910; }
+    .btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+
+    /* toolbar */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .toolbar-acoes { display: flex; gap: 8px; }
+
+    /* tabela */
+    .table-wrap { background: white; border-radius: 10px;
+                  box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow: hidden; }
+    .table-wrap h2 { padding: 16px 22px; font-size: 0.95rem; font-weight: 600;
+                     border-bottom: 1px solid #eee; color: #1a5276; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f7f9fc; }
+    th { padding: 11px 14px; text-align: left; font-size: 0.75rem;
+         text-transform: uppercase; letter-spacing: .4px; color: #777;
+         border-bottom: 2px solid #eee; }
+    td { padding: 11px 14px; font-size: 0.88rem; border-bottom: 1px solid #f2f2f2;
+         vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px;
+             font-size: 0.73rem; font-weight: 600; }
+    .badge.receita   { background: #d5f5e3; color: #1e8449; }
+    .badge.despesa   { background: #fadbd8; color: #c0392b; }
+    .badge.efetivado { background: #d6eaf8; color: #1a5276; }
+    .badge.pendente  { background: #fef9e7; color: #b7950b; }
+
+    .valor.receita { color: #27ae60; font-weight: 600; }
+    .valor.despesa { color: #e74c3c; font-weight: 600; }
+
+    .acoes-td { display: flex; gap: 6px; }
+    .btn-icon { padding: 5px 8px; border-radius: 5px; border: none;
+                cursor: pointer; display: inline-flex; align-items: center; }
+    .btn-icon.edit  { background: #eaf4fb; color: #2980b9; }
+    .btn-icon.edit:hover  { background: #d6eaf8; }
+    .btn-icon.del   { background: #fdedec; color: #e74c3c; }
+    .btn-icon.del:hover   { background: #fadbd8; }
+
+    .erro { background: #fadbd8; color: #c0392b; padding: 14px 20px;
+            border-radius: 8px; margin-bottom: 18px; }
+
+    .empty { padding: 40px; text-align: center; color: #aaa; font-size: 0.9rem; }
+
+    footer { text-align: center; padding: 20px; color: #bbb; font-size: 0.78rem; }
+
+    /* modal confirmação */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.ativo { display: flex; }
+    .modal {
+      background: white; border-radius: 12px; padding: 32px 28px;
+      max-width: 380px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .modal h3 { font-size: 1.1rem; color: #1a5276; margin-bottom: 10px; }
+    .modal p  { font-size: 0.9rem; color: #666; margin-bottom: 24px; }
+    .modal-acoes { display: flex; gap: 10px; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="titulo">
+    <h1>Controle de Despesas e Receitas</h1>
+    <p>Registro de lançamentos financeiros</p>
+  </div>
+  <div class="user-info">
+    <span>{{ usuario_nome }}</span>
+    <a href="/logout">Sair</a>
+  </div>
+</header>
+
+<div class="container">
+
+  {% if erro %}
+    <div class="erro">{{ erro }}</div>
+  {% endif %}
+
+  <!-- Cards de resumo -->
+  {% set tr = namespace(v=0) %}
+  {% set td = namespace(v=0) %}
+  {% for l in lancamentos %}
+    {% if l[4] == 'receita' %}{% set tr.v = tr.v + l[3] %}{% endif %}
+    {% if l[4] == 'despesa' %}{% set td.v = td.v + l[3] %}{% endif %}
+  {% endfor %}
+  <div class="cards">
+    <div class="card receita">
+      <div class="label">Total Receitas</div>
+      <div class="value">R$ {{ "%.2f"|format(tr.v) }}</div>
+    </div>
+    <div class="card despesa">
+      <div class="label">Total Despesas</div>
+      <div class="value">R$ {{ "%.2f"|format(td.v) }}</div>
+    </div>
+    <div class="card saldo">
+      <div class="label">Saldo</div>
+      <div class="value">R$ {{ "%.2f"|format(tr.v - td.v) }}</div>
+    </div>
+    <div class="card total">
+      <div class="label">Lançamentos</div>
+      <div class="value">{{ lancamentos|length }}</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-wrap">
+    <form method="GET" action="/">
+      <div class="filtro-grupo">
+        <label>Data início</label>
+        <input type="date" name="data_inicio" value="{{ filtros.data_inicio }}">
+      </div>
+      <div class="filtro-grupo">
+        <label>Data fim</label>
+        <input type="date" name="data_fim" value="{{ filtros.data_fim }}">
+      </div>
+      <div class="filtro-grupo">
+        <label>Tipo</label>
+        <select name="tipo">
+          <option value="">Todos</option>
+          <option value="receita" {% if filtros.tipo == 'receita' %}selected{% endif %}>Receita</option>
+          <option value="despesa" {% if filtros.tipo == 'despesa' %}selected{% endif %}>Despesa</option>
+        </select>
+      </div>
+      <div class="filtro-grupo">
+        <label>Situação</label>
+        <select name="situacao">
+          <option value="">Todas</option>
+          <option value="pendente"  {% if filtros.situacao == 'pendente'  %}selected{% endif %}>Pendente</option>
+          <option value="efetivado" {% if filtros.situacao == 'efetivado' %}selected{% endif %}>Efetivado</option>
+        </select>
+      </div>
+      <div class="filtro-acoes">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="/" class="btn btn-outline">Limpar</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <span style="font-size:.85rem;color:#888;">{{ lancamentos|length }} registro(s) encontrado(s)</span>
+    <div class="toolbar-acoes">
+      <a href="/exportar-pdf?data_inicio={{ filtros.data_inicio }}&data_fim={{ filtros.data_fim }}&situacao={{ filtros.situacao }}&tipo={{ filtros.tipo }}"
+         class="btn btn-warning">Exportar PDF</a>
+      <a href="/novo" class="btn btn-success">+ Novo Lançamento</a>
+    </div>
+  </div>
+
+  <!-- Tabela -->
+  <div class="table-wrap">
+    <h2>Lançamentos</h2>
+    {% if lancamentos %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Descrição</th><th>Data</th>
+          <th>Valor</th><th>Tipo</th><th>Situação</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in lancamentos %}
+        <tr>
+          <td>{{ l[0] }}</td>
+          <td>{{ l[1] }}</td>
+          <td>{{ l[2].strftime('%d/%m/%Y') }}</td>
+          <td class="valor {{ l[4] }}">
+            {% if l[4] == 'despesa' %}-{% endif %}R$ {{ "%.2f"|format(l[3]) }}
+          </td>
+          <td><span class="badge {{ l[4] }}">{{ l[4]|capitalize }}</span></td>
+          <td><span class="badge {{ l[5] }}">{{ l[5]|capitalize }}</span></td>
+          <td>
+            <div class="acoes-td">
+              <a href="/editar/{{ l[0] }}" class="btn-icon edit" title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </a>
+              <button type="button" class="btn-icon del" title="Excluir"
+                      onclick="confirmarExclusao({{ l[0] }}, '{{ l[1] }}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">Nenhum lançamento encontrado.</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div class="modal-overlay" id="modalExclusao">
+  <div class="modal">
+    <h3>Confirmar exclusão</h3>
+    <p id="modalTexto">Deseja excluir este lançamento?</p>
+    <div class="modal-acoes">
+      <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+      <form id="formExcluir" method="POST">
+        <button type="submit" class="btn btn-danger">Excluir</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>Controle de Despesas e Receitas</footer>
+
+<script>
+  function confirmarExclusao(id, descricao) {
+    document.getElementById('modalTexto').textContent =
+      'Deseja excluir o lançamento "' + descricao + '"?';
+    document.getElementById('formExcluir').action = '/excluir/' + id;
+    document.getElementById('modalExclusao').classList.add('ativo');
+  }
+  function fecharModal() {
+    document.getElementById('modalExclusao').classList.remove('ativo');
+  }
+  document.getElementById('modalExclusao').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+  });
+</script>
+
+</body>
+</html>
