@@ -10,7 +10,7 @@ def test_login_get(client):
 
 # ── 2. Login: POST com credenciais corretas ───────────────
 def test_login_post_sucesso(client, make_conn):
-    conn = make_conn(fetchone=(1, 'Administrador'))
+    conn = make_conn(fetchone=(1, 'Administrador', 'admin@exemplo.com'))
     with patch('app.get_connection', return_value=conn):
         r = client.post('/login', data={'login': 'admin', 'senha': 'admin123'},
                         follow_redirects=False)

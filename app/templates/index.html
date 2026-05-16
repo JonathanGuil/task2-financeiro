@@ -25,6 +25,36 @@
     }
     header .user-info a:hover { background: rgba(255,255,255,0.3); }
 
+    /* menu de perfil */
+    .user-menu { position: relative; }
+    .user-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.18); color: white;
+      border: none; border-radius: 6px; padding: 6px 12px;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      font-family: inherit;
+    }
+    .user-toggle:hover { background: rgba(255,255,255,0.3); }
+    .user-toggle svg { transition: transform .2s; }
+    .user-toggle.aberto svg { transform: rotate(180deg); }
+    .perfil-dropdown {
+      display: none; position: absolute; right: 0; top: calc(100% + 8px);
+      background: white; color: #333; border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+      padding: 16px; width: 250px; z-index: 50;
+    }
+    .perfil-dropdown.aberto { display: block; }
+    .perfil-label { font-size: 0.7rem; text-transform: uppercase;
+                    letter-spacing: .5px; color: #999; margin-bottom: 3px; }
+    .perfil-email { font-size: 0.88rem; color: #1a5276; font-weight: 600;
+                    margin-bottom: 12px; word-break: break-all; }
+    .perfil-dropdown form { display: flex; flex-direction: column; gap: 8px; }
+    .perfil-dropdown input {
+      padding: 7px 10px; border: 1.5px solid #ddd; border-radius: 6px;
+      font-size: 0.85rem; outline: none; color: #333;
+    }
+    .perfil-dropdown input:focus { border-color: #2980b9; }
+
     .container { max-width: 1100px; margin: 28px auto; padding: 0 20px; }
 
     /* cards */
@@ -141,7 +171,23 @@
     <p>Registro de lançamentos financeiros</p>
   </div>
   <div class="user-info">
-    <span>{{ usuario_nome }}</span>
+    <div class="user-menu">
+      <button type="button" class="user-toggle" id="userToggle" onclick="togglePerfil()">
+        <span>{{ usuario_nome }}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="perfil-dropdown" id="perfilDropdown">
+        <div class="perfil-label">Email atual</div>
+        <div class="perfil-email">{{ usuario_email or 'não cadastrado' }}</div>
+        <form method="POST" action="/perfil">
+          <input type="email" name="email" placeholder="Novo email" required>
+          <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+        </form>
+      </div>
+    </div>
     <a href="/logout">Sair</a>
   </div>
 </header>
@@ -304,6 +350,18 @@
   }
   document.getElementById('modalExclusao').addEventListener('click', function(e) {
     if (e.target === this) fecharModal();
+  });
+
+  function togglePerfil() {
+    document.getElementById('perfilDropdown').classList.toggle('aberto');
+    document.getElementById('userToggle').classList.toggle('aberto');
+  }
+  document.addEventListener('click', function(e) {
+    var menu = document.querySelector('.user-menu');
+    if (menu && !menu.contains(e.target)) {
+      document.getElementById('perfilDropdown').classList.remove('aberto');
+      document.getElementById('userToggle').classList.remove('aberto');
+    }
   });
 </script>
 

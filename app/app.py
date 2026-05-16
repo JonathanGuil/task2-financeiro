@@ -31,12 +31,14 @@ def get_connection():
     )
 
 # ── Email helper ───────────────────────────────────────────
-def enviar_email(acao, lanc):
+def enviar_email(acao, lanc, destinatario):
+    if not destinatario:
+        print("[email] Usuario sem email cadastrado; notificacao nao enviada.")
+        return
     try:
-        destinatario = app.config['MAIL_USERNAME']
         msg = Message(
             subject=f"Lancamento {acao}: {lanc['descricao']}",
-            sender=destinatario,
+            sender=app.config['MAIL_USERNAME'],
             recipients=[destinatario]
         )
         msg.body = (
@@ -80,14 +82,15 @@ def login():
             conn = get_connection()
             cur  = conn.cursor()
             cur.execute(
-                "SELECT id, nome FROM usuario WHERE login=%s AND senha=%s AND situacao='ativo'",
+                "SELECT id, nome, email FROM usuario WHERE login=%s AND senha=%s AND situacao='ativo'",
                 (login_dig, senha_dig)
             )
             usuario = cur.fetchone()
             cur.close(); conn.close()
             if usuario:
-                session["usuario_id"]   = usuario[0]
-                session["usuario_nome"] = usuario[1]
+                session["usuario_id"]    = usuario[0]
+                session["usuario_nome"]  = usuario[1]
+                session["usuario_email"] = usuario[2]
                 return redirect(url_for("index"))
             erro = "Login ou senha incorretos."
         except Exception as e:
@@ -120,7 +123,24 @@ def index():
         lancamentos = []; erro = str(e)
 
     return render_template("index.html", lancamentos=lancamentos, erro=erro,
-                           usuario_nome=session.get("usuario_nome"), filtros=filtros)
+                           usuario_nome=session.get("usuario_nome"),
+                           usuario_email=session.get("usuario_email"), filtros=filtros)
+
+@app.route("/perfil", methods=["POST"])
+def perfil():
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+    novo_email = request.form.get("email", "").strip()
+    if novo_email:
+        try:
+            conn = get_connection(); cur = conn.cursor()
+            cur.execute("UPDATE usuario SET email=%s WHERE id=%s",
+                        (novo_email, session["usuario_id"]))
+            conn.commit(); cur.close(); conn.close()
+            session["usuario_email"] = novo_email
+        except Exception as e:
+            print(f"[perfil] Erro ao atualizar email: {e}")
+    return redirect(url_for("index"))
 
 @app.route("/novo", methods=["GET", "POST"])
 def novo():
@@ -140,7 +160,7 @@ def novo():
                     (d["descricao"], d["data_lancamento"], float(d["valor"]), d["tipo_lancamento"], d["situacao"] or "pendente")
                 )
                 conn.commit(); cur.close(); conn.close()
-                enviar_email("criado", d)
+                enviar_email("criado", d, session.get("usuario_email"))
                 return redirect(url_for("index"))
             except Exception as e:
                 erro = str(e)
@@ -164,7 +184,7 @@ def editar(id):
                     (d["descricao"], d["data_lancamento"], float(d["valor"]), d["tipo_lancamento"], d["situacao"], id)
                 )
                 conn.commit(); cur.close(); conn.close()
-                enviar_email("atualizado", d)
+                enviar_email("atualizado", d, session.get("usuario_email"))
                 return redirect(url_for("index"))
             except Exception as e:
                 erro = str(e)

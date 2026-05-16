@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     nome     TEXT NOT NULL,
     login    TEXT NOT NULL UNIQUE,
     senha    TEXT NOT NULL,
+    email    TEXT,
     situacao TEXT NOT NULL DEFAULT 'ativo'
 );
 
@@ -18,8 +19,8 @@ CREATE TABLE IF NOT EXISTS lancamento (
 );
 
 -- Dados iniciais: usuario
-INSERT INTO usuario (nome, login, senha, situacao) VALUES
-    ('Administrador', 'admin', 'admin123', 'ativo');
+INSERT INTO usuario (nome, login, senha, email, situacao) VALUES
+    ('Administrador', 'admin', 'admin123', 'jonathanguilhermequinot@gmail.com', 'ativo');
 
 -- Dados iniciais: 10 lancamentos
 INSERT INTO lancamento (descricao, data_lancamento, valor, tipo_lancamento, situacao) VALUES
