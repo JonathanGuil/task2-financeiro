@@ -1,28 +1,8 @@
--- Tabela usuario
-CREATE TABLE IF NOT EXISTS usuario (
-    id       SERIAL PRIMARY KEY,
-    nome     TEXT NOT NULL,
-    login    TEXT NOT NULL UNIQUE,
-    senha    TEXT NOT NULL,
-    email    TEXT,
-    situacao TEXT NOT NULL DEFAULT 'ativo'
-);
-
--- Tabela lancamento
-CREATE TABLE IF NOT EXISTS lancamento (
-    id               SERIAL PRIMARY KEY,
-    descricao        TEXT NOT NULL,
-    data_lancamento  DATE NOT NULL,
-    valor            NUMERIC(10,2) NOT NULL,
-    tipo_lancamento  TEXT NOT NULL CHECK (tipo_lancamento IN ('receita','despesa')),
-    situacao         TEXT NOT NULL DEFAULT 'pendente'
-);
-
--- Dados iniciais: usuario
+-- Usuario inicial
 INSERT INTO usuario (nome, login, senha, email, situacao) VALUES
     ('Administrador', 'admin', 'admin123', 'jonathanguilhermequinot@gmail.com', 'ativo');
 
--- Dados iniciais: 10 lancamentos
+-- 10 lancamentos iniciais
 INSERT INTO lancamento (descricao, data_lancamento, valor, tipo_lancamento, situacao) VALUES
     ('Salário mensal',          '2026-04-01', 5000.00, 'receita',  'efetivado'),
     ('Aluguel escritório',      '2026-04-02',  800.00, 'despesa',  'efetivado'),

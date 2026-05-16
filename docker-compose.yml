@@ -1,34 +1,51 @@
 # =============================================================
-#  Task 2 — Controle de Despesas e Receitas
+#  Ambiente LOCAL de Desenvolvimento — Controle de Despesas e Receitas
+#  Banco versionado com Flyway; aplicacao buildada a partir de app/Dockerfile.
 # =============================================================
 services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: postgres-fin
+    container_name: dev-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB:       task2
       POSTGRES_USER:     finuser
       POSTGRES_PASSWORD: finpass
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
+      - dev-pgdata:/var/lib/postgresql/data
     networks:
-      - finnet
+      - devnet
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U finuser -d task2"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  flask-fin:
-    image: python:3.12-slim
-    container_name: flask-fin
-    restart: unless-stopped
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: dev-flyway
     depends_on:
       postgres:
         condition: service_healthy
+    command: >
+      -url=jdbc:postgresql://postgres:5432/task2
+      -user=finuser -password=finpass
+      -connectRetries=10
+      migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    networks:
+      - devnet
+
+  app:
+    build: ./app
+    image: task2-financeiro:dev
+    container_name: dev-app
+    restart: unless-stopped
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
     environment:
       DB_HOST:       postgres
       DB_PORT:       "5432"
@@ -37,19 +54,14 @@ services:
       DB_PASS:       finpass
       MAIL_USER:     jonathanguilhermequinot@gmail.com
       MAIL_PASSWORD: "nyjt acpo zrom uoyb"
-    volumes:
-      - ./app:/app
-    working_dir: /app
     ports:
       - "5002:5000"
     networks:
-      - finnet
-    command: >
-      bash -c "
-        pip install -r requirements.txt --quiet &&
-        python app.py
-      "
+      - devnet
+
+volumes:
+  dev-pgdata:
 
 networks:
-  finnet:
+  devnet:
     driver: bridge
