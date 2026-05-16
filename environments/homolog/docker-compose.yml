@@ -1,0 +1,66 @@
+# =============================================================
+#  Ambiente de HOMOLOGACAO — Controle de Despesas e Receitas
+#  App na porta 5003. Banco proprio versionado com Flyway.
+# =============================================================
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: homolog-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       task2
+      POSTGRES_USER:     finuser
+      POSTGRES_PASSWORD: finpass
+    volumes:
+      - homolog-pgdata:/var/lib/postgresql/data
+    networks:
+      - homolognet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finuser -d task2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: homolog-flyway
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      -url=jdbc:postgresql://postgres:5432/task2
+      -user=finuser -password=finpass
+      -connectRetries=10
+      migrate
+    volumes:
+      - ../../db/migrations:/flyway/sql
+    networks:
+      - homolognet
+
+  app:
+    image: task2-financeiro:${APP_VERSION:-latest}
+    container_name: homolog-app
+    restart: unless-stopped
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+    environment:
+      DB_HOST:       postgres
+      DB_PORT:       "5432"
+      DB_NAME:       task2
+      DB_USER:       finuser
+      DB_PASS:       finpass
+      MAIL_USER:     jonathanguilhermequinot@gmail.com
+      MAIL_PASSWORD: "nyjt acpo zrom uoyb"
+    ports:
+      - "5003:5000"
+    networks:
+      - homolognet
+
+volumes:
+  homolog-pgdata:
+
+networks:
+  homolognet:
+    driver: bridge

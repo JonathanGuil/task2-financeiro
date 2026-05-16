@@ -1,0 +1,66 @@
+# =============================================================
+#  Ambiente de PRODUCAO — Controle de Despesas e Receitas
+#  App na porta 5004. Banco proprio versionado com Flyway.
+# =============================================================
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: prod-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       task2
+      POSTGRES_USER:     finuser
+      POSTGRES_PASSWORD: finpass
+    volumes:
+      - prod-pgdata:/var/lib/postgresql/data
+    networks:
+      - prodnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finuser -d task2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: prod-flyway
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      -url=jdbc:postgresql://postgres:5432/task2
+      -user=finuser -password=finpass
+      -connectRetries=10
+      migrate
+    volumes:
+      - ../../db/migrations:/flyway/sql
+    networks:
+      - prodnet
+
+  app:
+    image: task2-financeiro:${APP_VERSION:-latest}
+    container_name: prod-app
+    restart: unless-stopped
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+    environment:
+      DB_HOST:       postgres
+      DB_PORT:       "5432"
+      DB_NAME:       task2
+      DB_USER:       finuser
+      DB_PASS:       finpass
+      MAIL_USER:     jonathanguilhermequinot@gmail.com
+      MAIL_PASSWORD: "nyjt acpo zrom uoyb"
+    ports:
+      - "5004:5000"
+    networks:
+      - prodnet
+
+volumes:
+  prod-pgdata:
+
+networks:
+  prodnet:
+    driver: bridge
