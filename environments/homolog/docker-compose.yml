@@ -23,7 +23,7 @@ services:
       retries: 5
 
   flyway:
-    image: flyway/flyway:10-alpine
+    image: task2-flyway:${APP_VERSION:-latest}
     container_name: homolog-flyway
     depends_on:
       postgres:
@@ -33,8 +33,6 @@ services:
       -user=finuser -password=finpass
       -connectRetries=10
       migrate
-    volumes:
-      - ../../db/migrations:/flyway/sql
     networks:
       - homolognet
 

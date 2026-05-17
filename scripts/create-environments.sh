@@ -9,6 +9,9 @@ cd "$ROOT"
 echo "==> Buildando a imagem da aplicacao (task2-financeiro:latest)..."
 docker build -t task2-financeiro:latest ./app
 
+echo "==> Buildando a imagem do banco (task2-flyway:latest)..."
+docker build -t task2-flyway:latest ./db
+
 echo "==> Criando ambiente de HOMOLOGACAO (porta 5003)..."
 docker compose -f environments/homolog/docker-compose.yml up -d
 
