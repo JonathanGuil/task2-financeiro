@@ -3,3 +3,4 @@ psycopg2-binary==2.9.9
 Flask-Mail==0.10.0
 reportlab==4.2.0
 pytest==8.3.0
+flake8==7.1.1

@@ -1,0 +1,12 @@
+[flake8]
+# Configuracao da analise de qualidade de codigo do projeto task2-financeiro.
+# Usada pelo estagio "Qualidade de Codigo" do pipeline (Jenkinsfile).
+max-line-length = 120
+exclude = __pycache__, .pytest_cache
+
+# Codigos puramente esteticos, alinhados a convencao compacta deste projeto
+# (monolito Flask). Nao sao defeitos, ficam desativados de proposito.
+# Os checks que pegam erros reais continuam ativos: pyflakes (F*) para
+# variaveis indefinidas e imports nao usados, E501 (linha longa),
+# E741 (nome ambiguo), E9 (erros de sintaxe).
+extend-ignore = E221,E231,E241,E302,E305,E701,E702,E127,E128

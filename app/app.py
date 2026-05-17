@@ -156,8 +156,11 @@ def novo():
             try:
                 conn = get_connection(); cur = conn.cursor()
                 cur.execute(
-                    "INSERT INTO lancamento (descricao,data_lancamento,valor,tipo_lancamento,situacao) VALUES (%s,%s,%s,%s,%s)",
-                    (d["descricao"], d["data_lancamento"], float(d["valor"]), d["tipo_lancamento"], d["situacao"] or "pendente")
+                    "INSERT INTO lancamento "
+                    "(descricao,data_lancamento,valor,tipo_lancamento,situacao) "
+                    "VALUES (%s,%s,%s,%s,%s)",
+                    (d["descricao"], d["data_lancamento"], float(d["valor"]),
+                     d["tipo_lancamento"], d["situacao"] or "pendente")
                 )
                 conn.commit(); cur.close(); conn.close()
                 enviar_email("criado", d, session.get("usuario_email"))
@@ -180,7 +183,8 @@ def editar(id):
             try:
                 conn = get_connection(); cur = conn.cursor()
                 cur.execute(
-                    "UPDATE lancamento SET descricao=%s,data_lancamento=%s,valor=%s,tipo_lancamento=%s,situacao=%s WHERE id=%s",
+                    "UPDATE lancamento SET descricao=%s,data_lancamento=%s,"
+                    "valor=%s,tipo_lancamento=%s,situacao=%s WHERE id=%s",
                     (d["descricao"], d["data_lancamento"], float(d["valor"]), d["tipo_lancamento"], d["situacao"], id)
                 )
                 conn.commit(); cur.close(); conn.close()
@@ -190,7 +194,8 @@ def editar(id):
                 erro = str(e)
     try:
         conn = get_connection(); cur = conn.cursor()
-        cur.execute("SELECT id,descricao,data_lancamento,valor,tipo_lancamento,situacao FROM lancamento WHERE id=%s", (id,))
+        cur.execute("SELECT id,descricao,data_lancamento,valor,"
+                    "tipo_lancamento,situacao FROM lancamento WHERE id=%s", (id,))
         row = cur.fetchone(); cur.close(); conn.close()
         if not row:
             return redirect(url_for("index"))
@@ -253,11 +258,11 @@ def exportar_pdf():
 
     rows = [["#","Descricao","Data","Valor (R$)","Tipo","Situacao"]]
     total_r = total_d = 0.0
-    for l in lancamentos:
-        rows.append([str(l[0]), l[1], l[2].strftime("%d/%m/%Y"),
-                     f"R$ {l[3]:.2f}", l[4].capitalize(), l[5].capitalize()])
-        if l[4] == "receita": total_r += float(l[3])
-        else:                 total_d += float(l[3])
+    for lanc in lancamentos:
+        rows.append([str(lanc[0]), lanc[1], lanc[2].strftime("%d/%m/%Y"),
+                     f"R$ {lanc[3]:.2f}", lanc[4].capitalize(), lanc[5].capitalize()])
+        if lanc[4] == "receita": total_r += float(lanc[3])
+        else:                    total_d += float(lanc[3])
     rows += [
         ["","TOTAL RECEITAS","",f"R$ {total_r:.2f}","",""],
         ["","TOTAL DESPESAS","",f"R$ {total_d:.2f}","",""],
