@@ -42,10 +42,11 @@
     .btn { padding: 10px 20px; border: none; border-radius: 7px; cursor: pointer;
            font-size: 0.9rem; font-weight: 600; text-decoration: none;
            display: inline-flex; align-items: center; gap: 6px; }
-    .btn-primary { background: #2980b9; color: white; flex: 1; justify-content: center; }
-    .btn-primary:hover { background: #2471a3; }
-    .btn-outline  { background: white; color: #666; border: 1.5px solid #ddd; }
-    .btn-outline:hover { background: #f7f7f7; }
+    /* Cada botao tem sua propria classe para facilitar alterar a cor individualmente */
+    .btn-salvar { background: #2980b9; color: white; flex: 1; justify-content: center; }
+    .btn-salvar:hover { background: #2471a3; }
+    .btn-cancelar { background: white; color: #666; border: 1.5px solid #ddd; }
+    .btn-cancelar:hover { background: #f7f7f7; }
 
     .erro { background: #fadbd8; color: #c0392b; border-radius: 8px;
             padding: 11px 15px; margin-bottom: 18px; font-size: 0.88rem; }
@@ -108,8 +109,8 @@
       </div>
 
       <div class="acoes">
-        <a href="/" class="btn btn-outline">Cancelar</a>
-        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="/" class="btn btn-cancelar">Cancelar</a>
+        <button type="submit" class="btn btn-salvar">Salvar</button>
       </div>
     </form>
   </div>

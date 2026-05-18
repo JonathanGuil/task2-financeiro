@@ -87,16 +87,21 @@
     .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;
            font-size: 0.85rem; font-weight: 600; text-decoration: none;
            display: inline-flex; align-items: center; gap: 6px; }
-    .btn-primary  { background: #e74c3c; color: white; }
-    .btn-primary:hover { background: #2471a3; }
-    .btn-success  { background: #27ae60; color: white; }
-    .btn-success:hover { background: #229954; }
-    .btn-outline  { background: white; color: #666; border: 1.5px solid #ddd; }
-    .btn-outline:hover { background: #f7f7f7; }
-    .btn-danger   { background: #e74c3c; color: white; }
-    .btn-danger:hover { background: #cb4335; }
-    .btn-warning  { background: #f1c40f; color: white; }
-    .btn-warning:hover { background: #d4ac0d; }
+    /* Cada botao tem sua propria classe para facilitar alterar a cor individualmente */
+    .btn-filtro   { background: #2980b9; color: white; }
+    .btn-filtro:hover { background: #2471a3; }
+    .btn-limpar   { background: white; color: #666; border: 1.5px solid #ddd; }
+    .btn-limpar:hover { background: #f7f7f7; }
+    .btn-exportar { background: #f1c40f; color: white; }
+    .btn-exportar:hover { background: #d4ac0d; }
+    .btn-novo     { background: #27ae60; color: white; }
+    .btn-novo:hover { background: #229954; }
+    .btn-perfil   { background: #2980b9; color: white; }
+    .btn-perfil:hover { background: #2471a3; }
+    .btn-cancelar { background: white; color: #666; border: 1.5px solid #ddd; }
+    .btn-cancelar:hover { background: #f7f7f7; }
+    .btn-excluir  { background: #e74c3c; color: white; }
+    .btn-excluir:hover { background: #cb4335; }
     .btn-sm { padding: 5px 10px; font-size: 0.78rem; }
 
     /* toolbar */
@@ -134,10 +139,10 @@
     .acoes-td { display: flex; gap: 6px; }
     .btn-icon { padding: 5px 8px; border-radius: 5px; border: none;
                 cursor: pointer; display: inline-flex; align-items: center; }
-    .btn-icon.edit  { background: #eaf4fb; color: #2980b9; }
-    .btn-icon.edit:hover  { background: #d6eaf8; }
-    .btn-icon.del   { background: #fdedec; color: #e74c3c; }
-    .btn-icon.del:hover   { background: #fadbd8; }
+    .btn-editar  { background: #eaf4fb; color: #2980b9; }
+    .btn-editar:hover  { background: #d6eaf8; }
+    .btn-remover { background: #fdedec; color: #e74c3c; }
+    .btn-remover:hover { background: #fadbd8; }
 
     .erro { background: #fadbd8; color: #c0392b; padding: 14px 20px;
             border-radius: 8px; margin-bottom: 18px; }
@@ -184,7 +189,7 @@
         <div class="perfil-email">{{ usuario_email or 'não cadastrado' }}</div>
         <form method="POST" action="/perfil">
           <input type="email" name="email" placeholder="Novo email" required>
-          <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+          <button type="submit" class="btn btn-perfil btn-sm">Salvar</button>
         </form>
       </div>
     </div>
@@ -252,8 +257,8 @@
         </select>
       </div>
       <div class="filtro-acoes">
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-        <a href="/" class="btn btn-outline">Limpar</a>
+        <button type="submit" class="btn btn-filtro">Filtrar</button>
+        <a href="/" class="btn btn-limpar">Limpar</a>
       </div>
     </form>
   </div>
@@ -263,8 +268,8 @@
     <span style="font-size:.85rem;color:#888;">{{ lancamentos|length }} registro(s) encontrado(s)</span>
     <div class="toolbar-acoes">
       <a href="/exportar-pdf?data_inicio={{ filtros.data_inicio }}&data_fim={{ filtros.data_fim }}&situacao={{ filtros.situacao }}&tipo={{ filtros.tipo }}"
-         class="btn btn-warning">Exportar PDF</a>
-      <a href="/novo" class="btn btn-success">+ Novo Lançamento</a>
+         class="btn btn-exportar">Exportar PDF</a>
+      <a href="/novo" class="btn btn-novo">+ Novo Lançamento</a>
     </div>
   </div>
 
@@ -292,14 +297,14 @@
           <td><span class="badge {{ l[5] }}">{{ l[5]|capitalize }}</span></td>
           <td>
             <div class="acoes-td">
-              <a href="/editar/{{ l[0] }}" class="btn-icon edit" title="Editar">
+              <a href="/editar/{{ l[0] }}" class="btn-icon btn-editar" title="Editar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                      fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
               </a>
-              <button type="button" class="btn-icon del" title="Excluir"
+              <button type="button" class="btn-icon btn-remover" title="Excluir"
                       onclick="confirmarExclusao({{ l[0] }}, '{{ l[1] }}')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                      fill="none" stroke="currentColor" stroke-width="2.2">
@@ -328,9 +333,9 @@
     <h3>Confirmar exclusão</h3>
     <p id="modalTexto">Deseja excluir este lançamento?</p>
     <div class="modal-acoes">
-      <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-cancelar" onclick="fecharModal()">Cancelar</button>
       <form id="formExcluir" method="POST">
-        <button type="submit" class="btn btn-danger">Excluir</button>
+        <button type="submit" class="btn btn-excluir">Excluir</button>
       </form>
     </div>
   </div>

@@ -61,7 +61,8 @@
       margin-bottom: 18px;
     }
     input:focus { border-color: #2980b9; }
-    button {
+    /* Classe propria do botao para facilitar alterar a cor individualmente */
+    .btn-entrar {
       width: 100%;
       padding: 13px;
       background: linear-gradient(135deg, #1a5276, #2980b9);
@@ -74,7 +75,7 @@
       letter-spacing: .3px;
       transition: opacity .2s;
     }
-    button:hover { opacity: .9; }
+    .btn-entrar:hover { opacity: .9; }
     .erro {
       background: #fadbd8;
       color: #c0392b;
@@ -111,7 +112,7 @@
       <label for="senha">Senha</label>
       <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
 
-      <button type="submit">Entrar</button>
+      <button type="submit" class="btn-entrar">Entrar</button>
     </form>
 
 
