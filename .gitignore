@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Credenciais do Jenkins geradas no provisionamento — fora do versionamento.
+ci/.env

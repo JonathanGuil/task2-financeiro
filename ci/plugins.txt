@@ -1,0 +1,8 @@
+# Plugins do Jenkins pre-instalados na imagem (ci/Dockerfile.jenkins).
+# Evita baixar os "suggested plugins" em runtime, que e lento e instavel
+# na VM com pouca RAM. O jenkins-plugin-cli resolve as dependencias.
+workflow-aggregator
+git
+junit
+timestamper
+pipeline-stage-view

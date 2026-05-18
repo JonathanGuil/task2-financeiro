@@ -13,7 +13,11 @@ services:
     restart: unless-stopped
     user: root
     environment:
-      JAVA_OPTS: "-Xmx512m"
+      # runSetupWizard=false: usuario e job sao criados pelos scripts
+      # de init.groovy.d, sem o assistente inicial.
+      JAVA_OPTS: "-Xmx512m -Djenkins.install.runSetupWizard=false"
+      JENKINS_ADMIN_USER:     "${JENKINS_ADMIN_USER:-admin}"
+      JENKINS_ADMIN_PASSWORD: "${JENKINS_ADMIN_PASSWORD}"
     ports:
       - "8080:8080"
     volumes:

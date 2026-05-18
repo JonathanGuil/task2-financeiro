@@ -16,3 +16,12 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER jenkins
+
+# Plugins pre-instalados — evita baixar os "suggested plugins" em runtime
+# (lento e instavel na VM com pouca RAM).
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+# Scripts de inicializacao: rodam no boot do Jenkins e criam o usuario
+# admin e o job do pipeline, dispensando o assistente inicial.
+COPY init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/
