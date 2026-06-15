@@ -305,7 +305,7 @@
                 </svg>
               </a>
               <button type="button" class="btn-icon btn-remover" title="Excluir"
-                      onclick="confirmarExclusao({{ l[0] }}, '{{ l[1] }}')">
+                      onclick="confirmarExclusao('{{ l[0] }}', '{{ l[1] }}')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                      fill="none" stroke="currentColor" stroke-width="2.2">
                   <polyline points="3 6 5 6 21 6"/>
@@ -341,7 +341,7 @@
   </div>
 </div>
 
-<footer>Controle de Despesas e Receitasss</footer>
+<footer>Controle de Despesas e Receitas</footer>
 
 <script>
   function confirmarExclusao(id, descricao) {

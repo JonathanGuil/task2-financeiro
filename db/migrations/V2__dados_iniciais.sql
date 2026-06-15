@@ -14,3 +14,8 @@ INSERT INTO lancamento (descricao, data_lancamento, valor, tipo_lancamento, situ
     ('Material de escritório',  '2026-04-11',   95.30, 'despesa',  'pendente'),
     ('Reembolso despesas',      '2026-04-12',  200.00, 'receita',  'pendente'),
     ('Manutenção equipamento',  '2026-04-12',  350.00, 'despesa',  'pendente');
+
+-- V3__categoria.sql
+-- CREATE TABLE categoria (
+--    id   SERIAL PRIMARY KEY,
+--    nome TEXT NOT NULL);
