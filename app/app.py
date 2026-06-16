@@ -8,7 +8,7 @@ from reportlab.lib.units import cm
 import psycopg2
 import os
 import io
-import sys
+# import sys
 
 app = Flask(__name__)
 app.secret_key = "chave-secreta-task2"
