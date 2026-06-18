@@ -9,7 +9,6 @@ import psycopg2
 import os
 import io
 # import sys
-# aa
 
 app = Flask(__name__)
 app.secret_key = "chave-secreta-task2"
